@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Student Data</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.7.7/handlebars.min.js"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+    }
+    button {
+      padding: 10px;
+      margin: 10px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+    th, td {
+      border: 1px solid #ddd;
+      padding: 8px;
+      text-align: left;
+    }
+    th {
+      background-color: #f4f4f4;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Student Data</h1>
+  <button id="citButton">CIT Majors</button>
+  <button id="busButton">BUS Majors</button>
+
+  <div id="studentsContainer"></div>
+
+  <!-- TEMPLATE -->
+  <script id="students-template" type="text/x-handlebars-template">
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Major</th>
+          <th>Midterm</th>
+          <th>Final</th>
+        </tr>
+      </thead>
+      <tbody>
+        {{#each students}}
+          <tr>
+            <td>{{name}}</td>
+            <td>{{major}}</td>
+            <td>{{midterm}}</td>
+            <td>{{final}}</td>
+          </tr>
+        {{/each}}
+      </tbody>
+    </table>
+  </script>
+
+  <script>
+    let studentsData = [];
+
+    fetch('cit5students.json')
+      .then(response => response.json())
+      .then(data => {
+        studentsData = data;
+      })
+      .catch(error => console.error('Error loading JSON:', error));
+
+    const templateSource = document.getElementById('students-template').innerHTML;
+    const template = Handlebars.compile(templateSource);
+
+    function displayStudents(students) {
+      const html = template({ students });
+      document.getElementById('studentsContainer').innerHTML = html;
+    }
+
+    document.getElementById('citButton').addEventListener('click', function() {
+      const citMajors = studentsData.filter(student => student.major === 'CIT');
+      displayStudents(citMajors);
+    });
+
+    document.getElementById('busButton').addEventListener('click', function() {
+      const busMajors = studentsData.filter(student => student.major === 'BUS');
+      displayStudents(busMajors);
+    });
+
+    window.onload = function() {
+      displayStudents(studentsData);
+    };
+  </script>
+
+</body>
+</html>
